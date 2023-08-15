@@ -7,8 +7,10 @@ name = "pypi"
 pandas = "*"
 matplotlib = "*"
 mplfinance = "*"
+tabulate = "*"
+colorama = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "*"
