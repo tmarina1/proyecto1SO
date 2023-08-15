@@ -69,5 +69,4 @@ class CalculadoraFinanciera:
       cargarDataSet = self.leerDataSet(nombreArchivo, variable)
       return cargarDataSet[-1] >= cargarDataSet[-2]
 
-if __name__ == "__main__":
-  print(calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'volume', 13))
+
