@@ -1,4 +1,8 @@
 import json
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import mplfinance as mpf
 
 flag = False
 listaVariable = []
@@ -45,6 +49,25 @@ def calcularPromedioSimplePeriodos(nombreArchivo, variable, cantidadPeriodos):
 
   calculo = sum(listaAux)/len(listaAux)
   return calculo
+
+def grafica():
+  fig = plt.figure()
+  ax1 = fig.add_subplot()
+
+  def graficar(i):
+    with open('BRENTCMDUSD_D1.json', 'r') as archivo:
+        datos = json.load(archivo)
+    
+    campos = {'time': datos['time'][-50:],'Open': datos['open'][-50:],'High': datos['high'][-50:],'Low': datos['low'][-50:],'Close': datos['close'][-50:],'Volume': datos['volume'][-50:]}
+    data = pd.DataFrame(campos)
+    data['time'] = pd.to_datetime(data['time'], unit='s')
+    data.set_index('time', inplace = True)
+    
+    ax1.clear()
+    mpf.plot(data, ax = ax1, type = 'candle', style = 'charles')
+
+  ani = animation.FuncAnimation(fig, graficar, interval = 1000)
+  plt.show()
 
 def tendencia(nombreArchivo, variable):
   cargarDataSet = leerDataSet(nombreArchivo, variable)
