@@ -15,11 +15,13 @@ class CalculadoraFinanciera:
         self.sumatoriaAnterior = 0
         self.cantidadAnterior = 0
 
+    # Permite leer el archivo .json especificando el archivo que se desea leer y la variable que se desea tener
     def leerDataSet(self, nombreArchivo, variable):
         with open(nombreArchivo) as file:
             datos = json.load(file)
             return datos[variable]
 
+    # Retorna el calculo del promedio simple de todos los datos del archivo
     def calcularPromedioSimple(self, nombreArchivo, variable):
         valAux = 0
         calculo = 0
@@ -42,12 +44,14 @@ class CalculadoraFinanciera:
             calculo = sumatoriaActual / cantidadActual
         return calculo
 
+    # Retorna el calculo del promedio simple de los ultimos n periodos que se le indiquen
     def calcularPromedioSimplePeriodos(self, nombreArchivo, variable, cantidadPeriodos):
         cargarDataSet = self.leerDataSet(nombreArchivo, variable)
         listaAux = cargarDataSet[-cantidadPeriodos:]
         calculo = sum(listaAux) / len(listaAux)
         return calculo
 
+    # Grafica los ultimos 50 datos del dataset 
     def grafica(self):
         fig = plt.figure()
         ax1 = fig.add_subplot()
@@ -72,24 +76,26 @@ class CalculadoraFinanciera:
         tiempo_espera = random.uniform(1, 3) 
         time.sleep(tiempo_espera)
 
-    def tendencia(self, nombreArchivo, variable):
-        cargarDataSet = self.leerDataSet(nombreArchivo, variable)
-
-        ultimoValor= ultimoValor(self,nombreArchivo,variable)
-        contadorSube=0
-        contadorBaja=0
-        for i in range(-7,-1):
-            if cargarDataSet[i]<ultimoValor:
-                contadorSube+=1
-            elif cargarDataSet[i]>ultimoValor:
-                contadorBaja+=1
-        
-        return contadorSube >= contadorBaja
-
+    # Retorna el ultimo valor de la variable ingresada
     def ultimoValor(self, nombreArchivo, variable):
         cargarDataSet = self.leerDataSet(nombreArchivo, variable)
         return cargarDataSet[-1]
+
+    # Retorna si las acciones estan tendiendo a subir o a bajar
+    def tendencia(self, nombreArchivo, variable):
+        cargarDataSet = self.leerDataSet(nombreArchivo, variable)
+        ultimoDato = self.ultimoValor(nombreArchivo, variable)
+        contadorSube = 0
+        contadorBaja = 0
+        for i in range(-7,-1):
+            if cargarDataSet[i] < ultimoDato:
+                contadorSube += 1
+            elif cargarDataSet[i] > ultimoDato:
+                contadorBaja += 1
+        
+        return contadorSube >= contadorBaja
     
+    # Retorna la tabla que se va a mostrar por la terminal
     def tabla(self, valAccion, precioAlto, precioBajo, proGeneral, promUltimosCinco, proUltimosTrece):
         tabla = [['Valor accion', valAccion],
                 ['Precio más alto', precioAlto],

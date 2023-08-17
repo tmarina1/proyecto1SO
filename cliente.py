@@ -1,10 +1,12 @@
 from multiprocessing.connection import Client
 import json
+import random
 
 with open('BRENTCMDUSD_D1.json', 'r') as archivo:
   data = json.load(archivo)
 
-Time = int(input('Ingrese la fecha: '))
+nuevaFecha = data['time'][-1] + random.randrange(3, 15, 4)
+Time = nuevaFecha
 Open = float(input('Ingrese el valor de apertura: '))
 High = float(input('Ingrese el valor más alto: '))
 Low = float(input('Ingrese el valor más bajo: '))
