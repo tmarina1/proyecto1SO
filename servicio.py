@@ -10,7 +10,15 @@ def handle_client(client_conn, client_id, calc_handler):
             if data is None:
                 break 
             print(f"Cliente{client_id}: {data}")
-            print('PROM_SIMP: ',calc_handler.calcularPromedioSimple('BRENTCMDUSD_D1.json', 'close'))
+            #print('PROM_SIMP: ',calc_handler.calcularPromedioSimple('BRENTCMDUSD_D1.json', 'close'))
+            valAccion = calc_handler.ultimoValor('BRENTCMDUSD_D1.json', 'close')
+            precioAlto = calc_handler.ultimoValor('BRENTCMDUSD_D1.json', 'high')
+            precioBajo = calc_handler.ultimoValor('BRENTCMDUSD_D1.json', 'low')
+            proGeneral = calc_handler.calcularPromedioSimple('BRENTCMDUSD_D1.json', 'close')
+            promUltimosCinco = calc_handler.calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'close', 5)
+            proUltimosTrece = calc_handler.calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'close', 13)
+
+            print(calc_handler.tabla(valAccion, precioAlto, precioBajo, proGeneral, promUltimosCinco, proUltimosTrece))
         except EOFError:
             print(f"Cliente {client_id} salió.")
             break
