@@ -3,21 +3,20 @@ from multiprocessing.connection import Listener
 from calculos import CalculadoraFinanciera
 from colorama import init, Fore, Back, Style
 
-def handle_client(client_conn, client_id, calc_handler):
+def handle_client(client_conn, client_id, calc_handler, archivo_dataset):
     while True:
         try:
             data = client_conn.recv()
             if data is None:
                 break 
             print(f"Cliente {client_id}: {data}")
-            #print('PROM_SIMP: ',calc_handler.calcularPromedioSimple('BRENTCMDUSD_D1.json', 'close'))
-            tendencia = calc_handler.tendencia('BRENTCMDUSD_D1.json', 'close')
-            valAccion = calc_handler.ultimoValor('BRENTCMDUSD_D1.json', 'close')
-            precioAlto = calc_handler.ultimoValor('BRENTCMDUSD_D1.json', 'high')
-            precioBajo = calc_handler.ultimoValor('BRENTCMDUSD_D1.json', 'low')
-            proGeneral = calc_handler.calcularPromedioSimple('BRENTCMDUSD_D1.json', 'close')
-            promUltimosCinco = calc_handler.calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'close', 5)
-            proUltimosTrece = calc_handler.calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'close', 13)
+            tendencia = calc_handler.tendencia(archivo_dataset, 'close')
+            valAccion = calc_handler.ultimoValor(archivo_dataset, 'close')
+            precioAlto = calc_handler.ultimoValor(archivo_dataset, 'high')
+            precioBajo = calc_handler.ultimoValor(archivo_dataset, 'low')
+            proGeneral = calc_handler.calcularPromedioSimple(archivo_dataset, 'close')
+            promUltimosCinco = calc_handler.calcularPromedioSimplePeriodos(archivo_dataset, 'close', 5)
+            proUltimosTrece = calc_handler.calcularPromedioSimplePeriodos(archivo_dataset, 'close', 13)
 
             if tendencia:
                 print(Fore.GREEN + "Tendencia: Subir")
@@ -31,18 +30,18 @@ def handle_client(client_conn, client_id, calc_handler):
     client_conn.close()
 
 # Crea los procesos que se necesiten
-def main():
+def main(archivo_dataset):
     server_address = ('localhost', 6000)
     server = Listener(server_address)
     calc = CalculadoraFinanciera()
 
-    tendencia = calc.tendencia('BRENTCMDUSD_D1.json', 'close')
-    valAccion = calc.ultimoValor('BRENTCMDUSD_D1.json', 'close')
-    precioAlto = calc.ultimoValor('BRENTCMDUSD_D1.json', 'high')
-    precioBajo = calc.ultimoValor('BRENTCMDUSD_D1.json', 'low')
-    proGeneral = calc.calcularPromedioSimple('BRENTCMDUSD_D1.json', 'close')
-    promUltimosCinco = calc.calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'close', 5)
-    proUltimosTrece = calc.calcularPromedioSimplePeriodos('BRENTCMDUSD_D1.json', 'close', 13)
+    tendencia = calc.tendencia(archivo_dataset, 'close')
+    valAccion = calc.ultimoValor(archivo_dataset, 'close')
+    precioAlto = calc.ultimoValor(archivo_dataset, 'high')
+    precioBajo = calc.ultimoValor(archivo_dataset, 'low')
+    proGeneral = calc.calcularPromedioSimple(archivo_dataset, 'close')
+    promUltimosCinco = calc.calcularPromedioSimplePeriodos(archivo_dataset, 'close', 5)
+    proUltimosTrece = calc.calcularPromedioSimplePeriodos(archivo_dataset, 'close', 13)
 
     if tendencia:
         print(Fore.GREEN + "Tendencia: Subir")
@@ -59,9 +58,17 @@ def main():
         client_conn = server.accept()
         #print("Conexion de:", server.last_accepted)
 
-        client_process = Process(target=handle_client, args=(client_conn, client_id, calc))
+        client_process = Process(target=handle_client, args=(client_conn, client_id, calc, archivo_dataset))
         client_process.start()
         client_id += 1
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-ar", "--archivo", help = "Archivo dataset a utilizar (default=BRENTCMDUSD_D1.json)")
+    args = parser.parse_args()
+    
+    if args.archivo:
+        main(args.archivo)
+    else:
+        main('BRENTCMDUSD_D1.json')
