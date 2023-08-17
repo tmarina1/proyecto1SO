@@ -74,7 +74,17 @@ class CalculadoraFinanciera:
 
     def tendencia(self, nombreArchivo, variable):
         cargarDataSet = self.leerDataSet(nombreArchivo, variable)
-        return cargarDataSet[-1] >= cargarDataSet[-2]
+
+        ultimoValor= ultimoValor(self,nombreArchivo,variable)
+        contadorSube=0
+        contadorBaja=0
+        for i in range(-7,-1):
+            if cargarDataSet[i]<ultimoValor:
+                contadorSube+=1
+            elif cargarDataSet[i]>ultimoValor:
+                contadorBaja+=1
+        
+        return contadorSube >= contadorBaja
 
     def ultimoValor(self, nombreArchivo, variable):
         cargarDataSet = self.leerDataSet(nombreArchivo, variable)
